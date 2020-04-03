@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <!--开启驼峰命名自动匹配-->
+        <setting name="mapUnderscoreToCamelCase" value="true"/> 
+        <!--  开启sql打印      -->
+        <setting name="logImpl" value="STDOUT_LOGGING" />
+    </settings>
+    <typeAliases>
+<!--        <typeAlias type="com.dragon.entity.TripBase" alias="tripBase"/>-->
+        <!--为该包下所有类起别名，别名默认类名，不区分大小写        -->
+        <package name="com.dragon.entity"/>
+        <!-- 3、批量起别名的情况下，使用@Alias注解为某个类型指定新的别名 -->
+    </typeAliases>
+<!--    <plugins>-->
+<!--        <plugin interceptor="com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor">-->
+<!--        </plugin>-->
+<!--    </plugins>-->
+
+</configuration>

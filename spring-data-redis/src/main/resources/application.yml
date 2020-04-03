@@ -1,0 +1,20 @@
+server:
+  port: 8083
+  servlet:
+    context-path: /spring-data-redis
+
+spring:
+  application:
+    name: spring-data-redis
+  redis:
+    host: 192.168.0.105
+    port: 6379
+    password:
+    timeout: 3000
+    lettuce:
+      pool:
+        max-active: 1000
+        max-idle: 100
+        min-idle: 10
+        max-wait: 3000
+
