@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dragon.mybatis.mapper.PaymentInfoDao">
+
+	<resultMap id="PaymentInfo" type="com.dragon.mybatis.entity.PaymentInfo" >
+		<id column="id" property="id" />
+		<result column="bill_no" property="billNo" />
+		<result column="payee_name" property="payeeName" />
+		<result column="payee_num" property="payeeNum" />
+		<result column="account_name" property="accountName" />
+		<result column="account_num" property="accountNum" />
+		<result column="pay_way" property="payWay" />
+		<result column="is_delete" property="isDelete" />
+		<result column="created_by" property="createdBy" />
+		<result column="updated_by" property="updatedBy" />
+		<result column="created_date" property="createdDate" />
+		<result column="updated_date" property="updatedDate" />
+	</resultMap>
+	<!-- 通用查询结果列 -->
+	<sql id="Base_Column_List">
+		id, bill_no, payee_name, payee_num, account_name, account_num, pay_way, is_delete, created_by, updated_by, created_date, updated_date
+	</sql>
+
+	<insert id="savePaymentInfo" parameterType="com.dragon.mybatis.entity.PaymentInfo">
+		insert into t_payment_info(
+<!--		(id, bill_no, payee_name, payee_num, account_name, account_num, pay_way, is_delete, created_by, updated_by, created_date, updated_date)-->
+		<include refid="Base_Column_List"/>
+		)values (
+		#{id},
+		#{billNo},
+		#{payeeName},
+		#{payeeNum},
+		#{accountName},
+		#{accountNum},
+		#{payWay},
+		#{isDelete},
+		#{createdBy},
+		#{updatedBy},
+		#{createdDate},
+		#{updatedDate}
+		)
+	</insert>
+
+</mapper>
