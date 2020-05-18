@@ -21,6 +21,7 @@ import java.util.Properties;
 @Intercepts
         ({
                 @Signature(type = Executor.class, method = "update", args = {MappedStatement.class, Object.class}),
+                @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class}),
         })
 @Component
 public class MybatisInterceptor implements Interceptor {
@@ -29,7 +30,8 @@ public class MybatisInterceptor implements Interceptor {
 //    @Value("${fdn.open}")
     private boolean fdnOpen = true;
 
-    static int MAPPED_STATEMENT_INDEX = 0;// 这是对应上面的args的序号
+    // 这是对应上面的args的序号
+    static int MAPPED_STATEMENT_INDEX = 0;
     static int PARAMETER_INDEX = 1;
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
@@ -43,41 +45,47 @@ public class MybatisInterceptor implements Interceptor {
         SqlCommandType sqlCommandType = mappedStatement.getSqlCommandType();
         if (SqlCommandType.INSERT.equals(sqlCommandType)) {
             //插入操作时，自动插入env
-//            Field fieldCreate = object.getClass().getDeclaredField("createdDate");
-            Field[] declaredFields = parameter.getClass().getSuperclass().getDeclaredFields();
-            for (Field field : declaredFields){
-                System.out.println(field.getName());
-            }
             Field fieldCreate = parameter.getClass().getSuperclass().getDeclaredField("createdDate");
             fieldCreate.setAccessible(true);
             fieldCreate.set(parameter, new Date());
+            Field createdBy = parameter.getClass().getSuperclass().getDeclaredField("createdBy");
+            createdBy.setAccessible(true);
+            createdBy.set(parameter, "system");
         }
         BoundSql boundSql = mappedStatement.getBoundSql(parameter);
 
         String sql = boundSql.getSql();
         if(!sql.contains("created_date")){
-            sql = sql.substring(0,sql.indexOf(")"))+",created_date"+sql.substring(sql.indexOf(")"),sql.lastIndexOf(")"))+",?)";
+            sql = orgSql(sql,"created_date");
+        }
+        if(!sql.contains("created_by")){
+            sql = orgSql(sql,"created_by");
         }
         List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
 //        ParameterMapping parameterMapping = ParameterMapping.Builder(mappedStatement.getConfiguration(),"createdDate", JdbcType.TIMESTAMP.getClass())
 
         ParameterMapping.Builder builder = new ParameterMapping.Builder(mappedStatement.getConfiguration(),"createdDate",java.util.Date.class);
         ParameterMapping build = builder.build();
+        ParameterMapping.Builder builder2 = new ParameterMapping.Builder(mappedStatement.getConfiguration(),"createdBy",java.lang.String.class);
+        ParameterMapping build2 = builder2.build();
         parameterMappings.add(build);
+        parameterMappings.add(build2);
 
 
         // 重新new一个查询语句对像
         BoundSql newBoundSql = new BoundSql(mappedStatement.getConfiguration(), sql, parameterMappings, boundSql.getParameterObject());
         // 把新的查询放到statement里
         MappedStatement newMs = copyFromMappedStatement(mappedStatement, new BoundSqlSqlSource(newBoundSql));
-//        for (ParameterMapping mapping : parameterMappings) {
-//            String prop = mapping.getProperty();
-//            if (boundSql.hasAdditionalParameter(prop)) {
-//                newBoundSql.setAdditionalParameter(prop, boundSql.getAdditionalParameter(prop));
-//            }
-//        }
         queryArgs[MAPPED_STATEMENT_INDEX] = newMs;
         return invocation.proceed();
+    }
+
+    private String orgSql(String sql,String param){
+        StringBuffer sb = new StringBuffer();
+        sb.append(sql, 0, sql.indexOf(")"))
+                .append(",").append(param)
+                .append(sql, sql.indexOf(")"), sql.lastIndexOf(")")).append(",?)");
+        return sb.toString();
     }
 
     @Override
