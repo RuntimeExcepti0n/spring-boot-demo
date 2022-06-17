@@ -34,7 +34,7 @@
         <commons-lang3.version>3.4</commons-lang3.version>
         <cglib.version>3.2.5</cglib.version>
         <asm.version>5.2</asm.version>
-        <fastjson.version>1.2.56</fastjson.version>
+        <fastjson.version>1.2.83</fastjson.version>
         <lombok.version>1.16.20</lombok.version>
         <netty.version>4.0.17.Final</netty.version>
         <springboot.version>1.5.9.RELEASE</springboot.version>
